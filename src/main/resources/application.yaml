@@ -1,0 +1,42 @@
+spring:
+  application:
+    name: Game_Arena
+
+  # === BASE DE DONNÉES ===
+  datasource:
+    url: jdbc:postgresql://localhost:5432/game_arena
+    username: postgres
+    password: azerty+35
+
+  # === JPA / HIBERNATE ===
+  jpa:
+    hibernate:
+      # "update" : Hibernate adapte le schéma sans supprimer les données existantes
+      # En production on utiliserait "validate" avec un outil de migration (Liquibase/Flyway)
+      ddl-auto: update
+    show-sql: false
+    properties:
+      jakarta:
+        persistence:
+          validation:
+            # La validation est gérée par Spring (via @Validated dans les services), pas par Hibernate
+            mode: none
+      hibernate:
+        format_sql: true
+        use_sql_comments: true
+
+  # === JACKSON (sérialisation JSON) ===
+  jackson:
+    # Ne pas inclure les champs null dans les réponses JSON → réponses plus légères
+    default-property-inclusion: non_null
+# === CONSTANTES MÉTIER DU PARC ===
+app:
+  security:
+    jwt:
+      # Clé secrète pour signer les tokens JWT (min. 64 caractères en production)
+      secret: game-arena-secret-key-very-long-at-least-64-characters-long-for-security
+      # Access token : 15 minutes (courte durée = fenêtre de vol réduite)
+      expiration: 900000
+    refresh-token:
+      # Refresh token : 2 heures, expiration glissante (réinitialisée à chaque rotation)
+      expiration-hours: 2

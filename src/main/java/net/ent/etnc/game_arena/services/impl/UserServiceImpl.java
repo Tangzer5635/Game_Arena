@@ -1,0 +1,17 @@
+package net.ent.etnc.game_arena.services.impl;
+
+import net.ent.etnc.game_arena.models.entities.User;
+import net.ent.etnc.game_arena.repositories.UserRepository;
+import net.ent.etnc.game_arena.services.UserService;
+import net.ent.etnc.game_arena.services.commons.AbstractService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+@Service
+public class UserServiceImpl extends AbstractService<User, UserRepository> implements UserService {
+
+    @Autowired
+    public UserServiceImpl(UserRepository userRepository) {
+        super(userRepository);
+    }
+}
