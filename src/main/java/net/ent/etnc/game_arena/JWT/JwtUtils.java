@@ -56,7 +56,6 @@ public class JwtUtils {
                 .issuedAt(new Date())                           // claim "iat"
                 .expiration(new Date(                           // claim "exp"
                         System.currentTimeMillis() + jwtExpirationMs))
-                .claim("email", user.getEmail())                // custom claim
                 .claim("role", user.getRole().name())           // custom claim
                 .signWith(getSecretKey())                       // HMAC-SHA256
                 .compact();

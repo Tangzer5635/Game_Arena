@@ -1,7 +1,7 @@
 package net.ent.etnc.game_arena.commons;
 
 import jakarta.json.*;
-import net.ent.etnc.jurassicpark.services.commons.ServiceException;
+import net.ent.etnc.game_arena.services.commons.ServiceException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import tools.jackson.databind.ObjectMapper;

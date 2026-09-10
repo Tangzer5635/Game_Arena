@@ -1,10 +1,8 @@
 package net.ent.etnc.game_arena.services.commons;
 
 import jakarta.validation.groups.Default;
-import net.ent.etnc.jurassicpark.models.commons.AbstractPersistableWithIdSetter;
-import net.ent.etnc.jurassicpark.models.validators.groups.CreateGroup;
-import net.ent.etnc.jurassicpark.models.validators.groups.UpdateGroup;
-import net.ent.etnc.jurassicpark.repositories.commons.BaseRepository;
+import net.ent.etnc.game_arena.models.commons.AbstractPersistableWithIdSetter;
+import net.ent.etnc.game_arena.repositories.commons.BaseRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
@@ -36,7 +34,7 @@ public class AbstractService<T extends AbstractPersistableWithIdSetter<Long>, R 
 
     @Override
     @Transactional
-    @Validated({Default.class, CreateGroup.class})
+    @Validated({Default.class})
     public T create(T entity) throws ServiceException {
         try {
             return repository.save(entity);
@@ -47,7 +45,7 @@ public class AbstractService<T extends AbstractPersistableWithIdSetter<Long>, R 
 
     @Override
     @Transactional
-    @Validated({Default.class, UpdateGroup.class})
+    @Validated({Default.class})
     public T update(T entity) throws ServiceException {
         if (entity.getId() == null) {
             throw new ServiceException("L'ID de l'entité ne peut pas être null pour une mise à jour.");

@@ -1,9 +1,9 @@
 package net.ent.etnc.game_arena.controllers.handlers;
 
-import net.ent.etnc.jurassicpark.exceptions.RefreshTokenExpiredException;
-import net.ent.etnc.jurassicpark.exceptions.RefreshTokenNotFoundException;
-import net.ent.etnc.jurassicpark.exceptions.RefreshTokenTheftException;
-import net.ent.etnc.jurassicpark.services.commons.ServiceException;
+import net.ent.etnc.game_arena.exceptions.RefreshTokenExpiredException;
+import net.ent.etnc.game_arena.exceptions.RefreshTokenNotFoundException;
+import net.ent.etnc.game_arena.exceptions.RefreshTokenTheftException;
+import net.ent.etnc.game_arena.services.commons.ServiceException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.web.bind.annotation.ControllerAdvice;

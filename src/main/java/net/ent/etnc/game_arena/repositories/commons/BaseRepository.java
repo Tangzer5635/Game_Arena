@@ -1,6 +1,6 @@
 package net.ent.etnc.game_arena.repositories.commons;
 
-import net.ent.etnc.jurassicpark.models.commons.AbstractPersistableWithIdSetter;
+import net.ent.etnc.game_arena.models.commons.AbstractPersistableWithIdSetter;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.repository.NoRepositoryBean;
