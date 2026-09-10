@@ -4,7 +4,7 @@ import cz.jirutka.rsql.parser.RSQLParser;
 import cz.jirutka.rsql.parser.RSQLParserException;
 import cz.jirutka.rsql.parser.ast.*;
 import io.github.perplexhub.rsql.RSQLJPASupport;
-import net.ent.etnc.jurassicpark.services.commons.ServiceException;
+import net.ent.etnc.game_arena.services.commons.ServiceException;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Component;
 
