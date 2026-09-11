@@ -19,7 +19,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 
 /**
  * Configuration de Spring Security.
- *
+ * <p>
  * Points clés :
  * - Stateless : pas de session HTTP (chaque requête est authentifiée via le token JWT)
  * - CSRF désactivé : inutile pour une API REST consommée par un client externe
@@ -37,7 +37,9 @@ public class WebSecurityConfig {
         this.userDetailsService = userDetailsService;
     }
 
-    /** Bean PasswordEncoder : BCrypt est l'algorithme recommandé pour les mots de passe. */
+    /**
+     * Bean PasswordEncoder : BCrypt est l'algorithme recommandé pour les mots de passe.
+     */
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
@@ -52,7 +54,7 @@ public class WebSecurityConfig {
         AuthenticationManagerBuilder builder =
                 httpSecurity.getSharedObject(AuthenticationManagerBuilder.class);
         builder.userDetailsService(this.userDetailsService)
-               .passwordEncoder(passwordEncoder());
+                .passwordEncoder(passwordEncoder());
         return builder.build();
     }
 
@@ -63,18 +65,18 @@ public class WebSecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http, AuthJwtFilter authJwtFilter) {
         // Désactivation CSRF et CORS (API REST, pas de form HTML)
         http.cors(AbstractHttpConfigurer::disable)
-            .csrf(AbstractHttpConfigurer::disable);
+                .csrf(AbstractHttpConfigurer::disable);
 
         // Stateless : pas de session HTTP côté serveur
         http.sessionManagement(s -> s.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
 
         // Règles d'autorisation
         http.authorizeHttpRequests(auth -> auth
-            // Login public (pas besoin de token pour se connecter)
-                .requestMatchers("/api/v1/users/login/", "/api/v1/users/refresh/", "/api/v1/users/logout/").permitAll()
-            .requestMatchers(HttpMethod.OPTIONS).permitAll()
-            // Tout le reste nécessite une authentification JWT valide
-            .anyRequest().authenticated()
+                // Login public (pas besoin de token pour se connecter)
+                .requestMatchers("/api/v1/users/login/", "/api/v1/users/refresh/").permitAll()
+                .requestMatchers(HttpMethod.OPTIONS).permitAll()
+                // Tout le reste nécessite une authentification JWT valide
+                .anyRequest().authenticated()
         );
 
         // 401 pour token absent/invalide, 403 uniquement pour rôle insuffisant
