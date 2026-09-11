@@ -1,40 +1,38 @@
 package net.ent.etnc.game_arena.dtos.assemblers;
 
-import net.ent.etnc.game_arena.dtos.UserDto;
+import net.ent.etnc.game_arena.dtos.UserRequestDto;
+import net.ent.etnc.game_arena.dtos.UserResponseDto;
 import net.ent.etnc.game_arena.models.entities.User;
 import net.ent.etnc.game_arena.models.enumerations.Role;
-import net.ent.etnc.game_arena.services.UserService;
-import net.ent.etnc.game_arena.services.commons.ServiceException;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.util.Collection;
 import java.util.List;
 
 @Component
 public class UserAssembler {
 
-    public UserDto toDto(User user) {
-        return UserDto.builder()
+    public UserResponseDto toDto(User user) {
+
+        return UserResponseDto.builder()
                 .id(user.getId())
                 .username(user.getUsername())
-                .password(user.getPassword())
+                .role(user.getRole())
                 .build();
     }
 
-    public List<UserDto> toDtos(List<User> users) {
-        return users.stream()
-                .map(this::toDto)
-                .toList();
+    public List<UserResponseDto> toDtos(Collection<User> users) {
+
+        return users.stream().map(this::toDto).toList();
     }
 
-    public User toEntity(UserDto userDto) throws ServiceException {
+    public User toEntity(UserRequestDto dto) {
+
         User user = new User();
 
-        user.setId(userDto.getId());
-        user.setUsername(userDto.getUsername());
-        user.setPassword(userDto.getPassword());
-
-        // Rôle par défaut
+        user.setId(dto.getId());
+        user.setUsername(dto.getUsername());
+        user.setPassword(dto.getPassword());
         user.setRole(Role.USER);
 
         return user;

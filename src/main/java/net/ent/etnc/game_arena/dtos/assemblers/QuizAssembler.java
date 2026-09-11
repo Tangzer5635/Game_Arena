@@ -1,20 +1,40 @@
 package net.ent.etnc.game_arena.dtos.assemblers;
 
-import net.ent.etnc.game_arena.dtos.QuizDto;
+import lombok.RequiredArgsConstructor;
+import net.ent.etnc.game_arena.dtos.QuizRequestDto;
+import net.ent.etnc.game_arena.dtos.QuizResponseDto;
 import net.ent.etnc.game_arena.models.entities.Quiz;
-import net.ent.etnc.game_arena.services.QuizService;
-import net.ent.etnc.game_arena.services.commons.ServiceException;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.util.Collection;
+import java.util.List;
+
 @Component
+@RequiredArgsConstructor
 public class QuizAssembler {
 
-    private final QuizService quizService;
+    private final QuestionAssembler questionAssembler;
 
-    @Autowired
-    public QuizAssembler(QuizService quizService) {
-        this.quizService = quizService;
+    public QuizResponseDto toDto(Quiz quiz) {
+
+        return QuizResponseDto.builder()
+                .id(quiz.getId())
+                .titre(quiz.getTitre())
+                .description(quiz.getDescription())
+                .questions(questionAssembler.toDtos(quiz.getQuestions()))
+                .build();
     }
 
+    public List<QuizResponseDto> toDtos(Collection<Quiz> quizzes) {
+
+        return quizzes.stream().map(this::toDto).toList();
+    }
+
+    public Quiz toEntity(QuizRequestDto dto) {
+        Quiz quiz = new Quiz();
+        quiz.setId(dto.getId());
+        quiz.setTitre(dto.getTitre());
+        quiz.setDescription(dto.getDescription());
+        return quiz;
+    }
 }

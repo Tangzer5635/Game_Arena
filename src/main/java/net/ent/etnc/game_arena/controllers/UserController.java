@@ -1,7 +1,7 @@
 package net.ent.etnc.game_arena.controllers;
 
 import jakarta.servlet.http.HttpServletRequest;
-import net.ent.etnc.game_arena.dtos.UserDto;
+import net.ent.etnc.game_arena.dtos.UserRequestDto;
 import net.ent.etnc.game_arena.models.entities.User;
 import net.ent.etnc.game_arena.security.jwt.JwtUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -46,7 +47,7 @@ public class UserController {
      * Retour : header Authorization: Bearer {jwt}  +  cookie jp_refresh (httpOnly)
      */
     @PostMapping("login/")
-    public ResponseEntity<Void> login(@RequestBody UserDto authDto, HttpServletRequest request) {
+    public ResponseEntity<Void> login(@RequestBody UserRequestDto authDto, HttpServletRequest request) {
         try {
             Authentication authentication = authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(authDto.getUsername(), authDto.getPassword())
@@ -103,7 +104,7 @@ public class UserController {
     }
 
     /**
-     * POST /api/v1/auth/logout/
+     * POST /api/v1/users/logout/
      * Cookie : jp_refresh — révoque le token en base et efface le cookie.
      */
     @PostMapping("logout/")
@@ -129,7 +130,7 @@ public class UserController {
                 .httpOnly(true)
                 .secure(false)          // passer à true en production (HTTPS)
                 .sameSite("Strict")
-                .path("/api/v1/auth/refresh")   // cookie envoyé uniquement vers les endpoints d'auth
+                .path("/api/v1/users/refresh")   // cookie envoyé uniquement vers les endpoints d'users
                 .maxAge(Duration.ofHours(refreshExpirationHours))
                 .build();
     }
@@ -139,7 +140,7 @@ public class UserController {
                 .httpOnly(true)
                 .secure(false)
                 .sameSite("Strict")
-                .path("/api/v1/auth")
+                .path("/api/v1/users")
                 .maxAge(0)
                 .build();
     }
