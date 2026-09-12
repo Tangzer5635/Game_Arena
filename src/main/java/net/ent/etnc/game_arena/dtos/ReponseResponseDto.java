@@ -7,7 +7,11 @@ import lombok.*;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class SalonDto {
+public class ReponseResponseDto {
 
     private Long id;
+
+    private String text;
+
+    private boolean estBonne;
 }

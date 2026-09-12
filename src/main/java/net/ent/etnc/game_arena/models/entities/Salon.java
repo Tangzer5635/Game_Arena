@@ -35,8 +35,11 @@ public class Salon extends AbstractPersistableWithIdSetter<Long> {
     }
 
     public void addUser(User user) {
-        users.add(user);
+        if (!users.contains(user)) {
+            users.add(user);
+        }
     }
+
     public void removeUser(User user) {
         users.remove(user);
     }
