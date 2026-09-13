@@ -18,7 +18,9 @@ public class SalonAssembler {
         return SalonResponseDto.builder()
                 .id(salon.getId())
                 .code(salon.getCode())
+                .createurId(salon.getCreateurId())
                 .etat(salon.getEtat())
+                .quizId(salon.getQuizId())
                 .users(userAssembler.toDtos(salon.getUsers()))
                 .build();
     }

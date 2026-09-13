@@ -5,8 +5,15 @@ import {
     type ReactNode,
 } from "react";
 
+interface CurrentUser {
+    id: number;
+    username: string;
+    role: "USER" | "ADMIN";
+}
+
 interface AuthContextType {
     isAuthenticated: boolean;
+    currentUser: CurrentUser | null;
     login: (token: string) => void;
     logout: () => void;
 }
@@ -17,25 +24,51 @@ interface AuthProviderProps {
     children: ReactNode;
 }
 
-export function AuthProvider({ children }: AuthProviderProps) {
+function getUserFromToken(token: string): CurrentUser | null {
+    try {
+        const payload = JSON.parse(atob(token.split(".")[1]));
+
+        return {
+            id: Number(payload.id),
+            username: payload.sub,
+            role: payload.role,
+        };
+    } catch (error) {
+        console.error("Impossible de lire le JWT :", error);
+        return null;
+    }
+}
+
+export function AuthProvider({children}: AuthProviderProps) {
+    const token = localStorage.getItem("token");
+
     const [isAuthenticated, setIsAuthenticated] = useState(
-        !!localStorage.getItem("token")
+        !!token
+    );
+
+    const [currentUser, setCurrentUser] = useState<CurrentUser | null>(
+        token ? getUserFromToken(token) : null
     );
 
     const login = (token: string) => {
         localStorage.setItem("token", token);
+
         setIsAuthenticated(true);
+        setCurrentUser(getUserFromToken(token));
     };
 
     const logout = () => {
         localStorage.removeItem("token");
+
         setIsAuthenticated(false);
+        setCurrentUser(null);
     };
 
     return (
         <AuthContext.Provider
             value={{
                 isAuthenticated,
+                currentUser,
                 login,
                 logout,
             }}

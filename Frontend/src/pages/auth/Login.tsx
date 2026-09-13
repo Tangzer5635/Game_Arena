@@ -9,20 +9,14 @@ export default function Login() {
 
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
-
     const [error, setError] = useState("");
 
     const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
         event.preventDefault();
-
         setError("");
 
         try {
-            const response = await api.post("/users/login/", {
-                username,
-                password,
-            });
-
+            const response = await api.post("/users/login/", { username, password });
             const authorization = response.headers.authorization;
 
             if (!authorization) {
@@ -30,13 +24,9 @@ export default function Login() {
                 return;
             }
 
-            const token = authorization.replace("Bearer ", "");
-
-            login(token);
-
+            login(authorization.replace("Bearer ", ""));
             navigate("/dashboard");
-        } catch (error) {
-            console.error(error);
+        } catch {
             setError("Identifiant ou mot de passe incorrect.");
         }
     };
@@ -47,39 +37,37 @@ export default function Login() {
 
             <form onSubmit={handleSubmit}>
                 <div>
-                    <label htmlFor="username">
-                        Nom d'utilisateur
-                    </label>
-
+                    <label htmlFor="username">Nom d'utilisateur</label>
                     <input
                         id="username"
                         type="text"
                         value={username}
-                        onChange={(event) => setUsername(event.target.value)}
+                        onChange={(e) => setUsername(e.target.value)}
+                        placeholder="tanguy"
                         required
                     />
                 </div>
 
                 <div>
-                    <label htmlFor="password">
-                        Mot de passe
-                    </label>
-
+                    <label htmlFor="password">Mot de passe</label>
                     <input
                         id="password"
                         type="password"
                         value={password}
-                        onChange={(event) => setPassword(event.target.value)}
+                        onChange={(e) => setPassword(e.target.value)}
+                        placeholder="••••••"
                         required
                     />
                 </div>
 
-                {error && <p>{error}</p>}
+                {error && <p className="error">{error}</p>}
 
-                <button type="submit">
-                    Se connecter
-                </button>
+                <button type="submit">Se connecter</button>
             </form>
+
+            <p className="auth-link">
+                Pas de compte ? <a href="/register">Créer un compte</a>
+            </p>
         </div>
     );
 }

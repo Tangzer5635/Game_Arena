@@ -13,6 +13,8 @@ import QuizDetails from "../pages/QuizDetails";
 import Salon from "../pages/Salon";
 import JoinSalon from "../pages/JoinSalon";
 import NotFound from "../pages/NotFound";
+import ChoixQuiz from "../pages/ChoixQuiz";
+import Game from "../pages/Game";
 
 export default function AppRouter() {
     return (
@@ -38,6 +40,8 @@ export default function AppRouter() {
                     <Route path="/salon" element={<Salon />} />
                     <Route path="/salon/join" element={<JoinSalon />} />
                     <Route path="/salon/:code" element={<SalonLobby />} />
+                    <Route path="/salon/:code/quiz" element={<ChoixQuiz />}/>
+                    <Route path="/salon/:code/game" element={<Game />} />
                 </Route>
             </Route>
 

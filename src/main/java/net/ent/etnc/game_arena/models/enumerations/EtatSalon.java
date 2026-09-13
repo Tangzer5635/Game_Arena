@@ -5,7 +5,8 @@ import lombok.Getter;
 @Getter
 public enum EtatSalon {
     OUVERT("Ouvert"),
-    EN_COURS("En cours");
+    EN_COURS("En cours"),
+    TERMINE("Terminé");
 
     private final String etat;
 

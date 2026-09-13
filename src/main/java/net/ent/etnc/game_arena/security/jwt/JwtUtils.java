@@ -47,6 +47,7 @@ public class JwtUtils {
                 .subject(userDetails.getUsername())
                 .issuedAt(new Date())
                 .expiration(new Date(System.currentTimeMillis() + this.jwtExpirationMs))
+                .claim("id", user.getId())
                 .claim("role", user.getRole().name())
                 .signWith(this.getSecretKey())
                 .compact();
@@ -61,6 +62,7 @@ public class JwtUtils {
                 .subject(user.getUsername())
                 .issuedAt(new Date())
                 .expiration(new Date(System.currentTimeMillis() + this.jwtExpirationMs))
+                .claim("id", user.getId())
                 .claim("role", user.getRole().name())
                 .signWith(this.getSecretKey())
                 .compact();

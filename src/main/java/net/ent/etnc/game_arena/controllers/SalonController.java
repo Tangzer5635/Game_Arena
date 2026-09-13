@@ -7,6 +7,7 @@ import net.ent.etnc.game_arena.models.entities.User;
 import net.ent.etnc.game_arena.models.enumerations.EtatSalon;
 import net.ent.etnc.game_arena.services.SalonService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
@@ -47,10 +48,26 @@ public class SalonController {
         return ResponseEntity.ok(salonAssembler.toDto(salonService.addUser(code, user.getId())));
     }
 
+    @PostMapping("/{code}/start")
+    @PreAuthorize("hasRole('USER')")
+    public ResponseEntity<SalonResponseDto> start(@PathVariable String code, @RequestParam Long quizId, Authentication authentication) {
+        User user = (User) authentication.getPrincipal();
+        Salon salon = salonService.start(code, user.getId(), quizId);
+        return ResponseEntity.ok(salonAssembler.toDto(salon));
+    }
+
     @DeleteMapping("/{code}/users/{userId}/")
     @PreAuthorize("hasRole('USER')")
-    public ResponseEntity<SalonResponseDto> removeUser(@PathVariable String code, @PathVariable Long userId) {
-        return ResponseEntity.ok(salonAssembler.toDto(salonService.removeUser(code, userId)));
+    public ResponseEntity<SalonResponseDto> removeUser(@PathVariable String code, @PathVariable Long userId, Authentication authentication) {
+        User user = (User) authentication.getPrincipal();
+        if (!user.getId().equals(userId)) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
+        Salon salon = salonService.removeUser(code, userId);
+        if (salon == null) {
+            return ResponseEntity.noContent().build();
+        }
+        return ResponseEntity.ok(salonAssembler.toDto(salon));
     }
 
     @PutMapping("/{code}/etat/")
@@ -61,8 +78,9 @@ public class SalonController {
 
     @DeleteMapping("/{code}/")
     @PreAuthorize("hasRole('USER')")
-    public ResponseEntity<Void> delete(@PathVariable String code) {
-        salonService.delete(code);
+    public ResponseEntity<Void> delete(@PathVariable String code, Authentication authentication) {
+        User user = (User) authentication.getPrincipal();
+        salonService.delete(code, user.getId());
         return ResponseEntity.noContent().build();
     }
 }

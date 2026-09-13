@@ -52,16 +52,20 @@ public class AuthJwtFilter extends OncePerRequestFilter {
             // Si un token valide est présent, on authentifie l'utilisateur
             if (token != null && jwtUtils.validateJwtToken(token)) {
                 String username = jwtUtils.getUsernameFromJwtToken(token);
+
                 UserDetails userDetails = userDetailsService.loadUserByUsername(username);
 
-                // Création du token d'authentification Spring Security
                 UsernamePasswordAuthenticationToken authentication =
                         new UsernamePasswordAuthenticationToken(
-                                userDetails, null, userDetails.getAuthorities()
+                                userDetails,
+                                null,
+                                userDetails.getAuthorities()
                         );
-                authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
 
-                // Enregistrement dans le SecurityContext (valable pour cette requête uniquement)
+                authentication.setDetails(
+                        new WebAuthenticationDetailsSource().buildDetails(request)
+                );
+
                 SecurityContextHolder.getContext().setAuthentication(authentication);
             }
         } catch (Exception e) {

@@ -29,7 +29,7 @@ public class Question extends AbstractPersistableWithIdSetter<Long> {
     private String text;
 
     @Valid
-    @OneToMany(fetch = FetchType.LAZY)
+    @OneToMany(fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @JoinColumn(name = "question_id",
             foreignKey = @ForeignKey(name = "fk_REPONSE_question"))
     private List<Reponse> reponses = new ArrayList<>();

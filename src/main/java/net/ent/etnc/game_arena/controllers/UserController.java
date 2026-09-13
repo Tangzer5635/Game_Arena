@@ -3,13 +3,14 @@ package net.ent.etnc.game_arena.controllers;
 import jakarta.servlet.http.HttpServletRequest;
 import net.ent.etnc.game_arena.dtos.UserRequestDto;
 import net.ent.etnc.game_arena.models.entities.User;
+import net.ent.etnc.game_arena.models.enumerations.Role;
 import net.ent.etnc.game_arena.security.jwt.JwtUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
+import net.ent.etnc.game_arena.services.UserService;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -28,6 +29,7 @@ public class UserController {
     private final AuthenticationManager authenticationManager;
     private final JwtUtils jwtUtils;
     private final RefreshTokenService refreshTokenService;
+    private final UserService userService;
 
     @Value("${app.security.refresh-token.expiration-hours:2}")
     private int refreshExpirationHours;
@@ -35,10 +37,11 @@ public class UserController {
     @Autowired
     public UserController(AuthenticationManager authenticationManager,
                           JwtUtils jwtUtils,
-                          RefreshTokenService refreshTokenService) {
+                          RefreshTokenService refreshTokenService, UserService userService) {
         this.authenticationManager = authenticationManager;
         this.jwtUtils = jwtUtils;
         this.refreshTokenService = refreshTokenService;
+        this.userService = userService;
     }
 
     /**
@@ -101,6 +104,20 @@ public class UserController {
                     .header(HttpHeaders.SET_COOKIE, buildClearCookie().toString())
                     .build();
         }
+    }
+
+    @PostMapping("/")
+    public ResponseEntity<Void> register(@RequestBody UserRequestDto userDto) {
+
+        User user = new User();
+        user.setUsername(userDto.getUsername());
+        user.setPassword(userDto.getPassword());
+
+        user.setRole(Role.USER);
+
+        userService.register(user);
+
+        return ResponseEntity.ok().build();
     }
 
     /**

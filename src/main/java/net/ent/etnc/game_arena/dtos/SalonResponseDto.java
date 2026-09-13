@@ -13,6 +13,8 @@ import java.util.List;
 public class SalonResponseDto {
     private Long id;
     private String code;
+    private Long createurId;
     private EtatSalon etat;
+    private Long quizId;
     private List<UserResponseDto> users;
 }

@@ -16,6 +16,11 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+
+import java.util.List;
 
 /**
  * Configuration de Spring Security.
@@ -58,13 +63,42 @@ public class WebSecurityConfig {
         return builder.build();
     }
 
+    @Bean
+    public CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration configuration = new CorsConfiguration();
+
+        configuration.setAllowedOrigins(List.of("http://localhost:5173"));
+
+        configuration.setAllowedMethods(List.of(
+                "GET",
+                "POST",
+                "PUT",
+                "PATCH",
+                "DELETE",
+                "OPTIONS"
+        ));
+
+        configuration.setAllowedHeaders(List.of("*"));
+
+        configuration.setExposedHeaders(List.of("Authorization"));
+
+        configuration.setAllowCredentials(true);
+
+        UrlBasedCorsConfigurationSource source =
+                new UrlBasedCorsConfigurationSource();
+
+        source.registerCorsConfiguration("/**", configuration);
+
+        return source;
+    }
+
     /**
      * Configuration de la chaîne de filtres de sécurité.
      */
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http, AuthJwtFilter authJwtFilter) {
         // Désactivation CSRF et CORS (API REST, pas de form HTML)
-        http.cors(AbstractHttpConfigurer::disable)
+        http.cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .csrf(AbstractHttpConfigurer::disable);
 
         // Stateless : pas de session HTTP côté serveur
@@ -73,7 +107,12 @@ public class WebSecurityConfig {
         // Règles d'autorisation
         http.authorizeHttpRequests(auth -> auth
                 // Login public (pas besoin de token pour se connecter)
-                .requestMatchers("/api/v1/users/login/", "/api/v1/users/refresh/").permitAll()
+                .requestMatchers(
+                        "/api/v1/users/",
+                        "/api/v1/users/login/",
+                        "/api/v1/users/refresh/"
+                ).permitAll()
+                .requestMatchers("/ws/**").permitAll()
                 .requestMatchers(HttpMethod.OPTIONS).permitAll()
                 // Tout le reste nécessite une authentification JWT valide
                 .anyRequest().authenticated()

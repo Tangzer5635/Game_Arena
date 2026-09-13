@@ -39,7 +39,7 @@ public class Quiz extends AbstractPersistableWithIdSetter<Long> {
     private String description;
 
     @Valid
-    @OneToMany(fetch = FetchType.LAZY)
+    @OneToMany(fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @JoinColumn(name = "quiz_id",
             foreignKey = @ForeignKey(name = "fk_QUESTION_quiz"))
     private List<Question> questions = new ArrayList<>();

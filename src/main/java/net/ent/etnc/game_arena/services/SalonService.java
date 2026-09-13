@@ -16,5 +16,7 @@ public interface SalonService {
 
     Salon changeEtat(String code, EtatSalon etat);
 
-    void delete(String code);
+    Salon start(String code, Long userId, Long quizId);
+
+    void delete(String code, Long userId);
 }
