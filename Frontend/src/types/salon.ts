@@ -8,5 +8,6 @@ export interface Salon {
     createurId: number;
     etat: EtatSalon;
     quizId: number | null;
+    maxPlayers: number;
     users: User[];
 }

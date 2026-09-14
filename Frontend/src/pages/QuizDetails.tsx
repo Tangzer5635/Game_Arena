@@ -1,3 +1,5 @@
 export default function QuizDetails() {
-    return <h1>Quiz Details</h1>;
+    return(
+        <div>QuizDetails</div>
+    )
 }

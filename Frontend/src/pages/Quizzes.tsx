@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 import QuizCard from "../components/quiz/QuizCard";
 import { getQuizzes } from "../services/quizService";
 import type { Quiz } from "../types/quiz";
@@ -37,7 +38,10 @@ export default function Quizzes() {
 
     return (
         <section>
-            <h1>Les quiz</h1>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 12 }}>
+                <h1>Les quiz</h1>
+                <Link to="/quizzes/create"><button>✏️ Créer un quiz</button></Link>
+            </div>
 
             {quizzes.length === 0 ? (
                 <p>Aucun quiz disponible.</p>

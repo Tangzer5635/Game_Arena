@@ -82,7 +82,7 @@ export default function SalonLobby() {
 
             {error && <p className="error">{error}</p>}
 
-            <h2 style={{ marginTop: 24 }}>Joueurs ({salon.users.length})</h2>
+            <h2 style={{ marginTop: 24 }}>Joueurs ({salon.users.length}/{salon.maxPlayers})</h2>
 
             <ul className="player-list">
                 {salon.users.map((user) => (

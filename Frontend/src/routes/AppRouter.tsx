@@ -14,6 +14,7 @@ import Salon from "../pages/Salon";
 import JoinSalon from "../pages/JoinSalon";
 import NotFound from "../pages/NotFound";
 import ChoixQuiz from "../pages/ChoixQuiz";
+import CreateQuiz from "../pages/CreateQuiz";
 import Game from "../pages/Game";
 
 export default function AppRouter() {
@@ -36,7 +37,8 @@ export default function AppRouter() {
                 <Route element={<MainLayout />}>
                     <Route path="/dashboard" element={<Dashboard />} />
                     <Route path="/quizzes" element={<Quizzes />} />
-                    <Route path="/quizzes/:id" element={<QuizDetails />} />
+                    <Route path="/quizzes/create" element={<CreateQuiz />} />
+                    <Route path="/quizzes/:quizId" element={<QuizDetails />} />
                     <Route path="/salon" element={<Salon />} />
                     <Route path="/salon/join" element={<JoinSalon />} />
                     <Route path="/salon/:code" element={<SalonLobby />} />
