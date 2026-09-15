@@ -17,7 +17,10 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
+import net.ent.etnc.game_arena.dtos.UserStatsDto;
 import net.ent.etnc.game_arena.services.RefreshTokenService;
+import net.ent.etnc.game_arena.services.UserStatsService;
+import org.springframework.security.access.prepost.PreAuthorize;
 
 import java.time.Duration;
 
@@ -30,6 +33,7 @@ public class UserController {
     private final JwtUtils jwtUtils;
     private final RefreshTokenService refreshTokenService;
     private final UserService userService;
+    private final UserStatsService userStatsService;
 
     @Value("${app.security.refresh-token.expiration-hours:2}")
     private int refreshExpirationHours;
@@ -37,11 +41,24 @@ public class UserController {
     @Autowired
     public UserController(AuthenticationManager authenticationManager,
                           JwtUtils jwtUtils,
-                          RefreshTokenService refreshTokenService, UserService userService) {
+                          RefreshTokenService refreshTokenService,
+                          UserService userService,
+                          UserStatsService userStatsService) {
         this.authenticationManager = authenticationManager;
         this.jwtUtils = jwtUtils;
         this.refreshTokenService = refreshTokenService;
         this.userService = userService;
+        this.userStatsService = userStatsService;
+    }
+
+    /**
+     * GET /api/v1/users/{id}/stats/
+     * Statistiques de profil d un joueur (parties jouees, score, taux de reussite).
+     */
+    @GetMapping("/{id}/stats/")
+    @PreAuthorize("hasRole('USER')")
+    public ResponseEntity<UserStatsDto> getStats(@PathVariable Long id) {
+        return ResponseEntity.ok(userStatsService.getStats(id));
     }
 
     /**

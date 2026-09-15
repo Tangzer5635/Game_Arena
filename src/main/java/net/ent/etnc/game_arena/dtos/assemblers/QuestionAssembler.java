@@ -18,6 +18,7 @@ public class QuestionAssembler {
         return QuestionResponseDto.builder()
                 .id(question.getId())
                 .text(question.getText())
+                .type(question.getType())
                 .reponses(reponseAssembler.toDtos(question.getReponses()))
                 .build();
     }
@@ -32,6 +33,7 @@ public class QuestionAssembler {
         Question question = new Question();
         question.setId(dto.getId());
         question.setText(dto.getText());
+        question.setType(dto.getType() == null ? net.ent.etnc.game_arena.models.enumerations.TypeQuestion.CHOIX : dto.getType());
 
         return question;
     }

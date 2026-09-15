@@ -13,7 +13,7 @@ spring:
     hibernate:
       # "update" : Hibernate adapte le schéma sans supprimer les données existantes
       # En production on utiliserait "validate" avec un outil de migration (Liquibase/Flyway)
-      ddl-auto: create
+      ddl-auto: update
     show-sql: false
     properties:
       jakarta:

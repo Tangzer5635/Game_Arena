@@ -1,22 +1,31 @@
 package net.ent.etnc.game_arena.services;
 
-import net.ent.etnc.game_arena.models.entities.Salon;
+import net.ent.etnc.game_arena.models.entities.SalonEntity;
 import net.ent.etnc.game_arena.models.enumerations.EtatSalon;
-import net.ent.etnc.game_arena.services.commons.Service;
 
+/**
+ * Contrat du service gérant le cycle de vie des salons de jeu.
+ * Toutes les implémentations doivent persister l'état en base (pas de RAM).
+ */
 public interface SalonService {
 
-    Salon create(Long userId);
+    SalonEntity create(Long userId, int maxPlayers);
 
-    Salon findByCode(String code);
+    SalonEntity findByCode(String code);
 
-    Salon addUser(String code, Long userId);
+    SalonEntity addUser(String code, Long userId);
 
-    Salon removeUser(String code, Long userId);
+    SalonEntity removeUser(String code, Long userId);
 
-    Salon changeEtat(String code, EtatSalon etat);
+    SalonEntity changeEtat(String code, EtatSalon etat);
 
-    Salon start(String code, Long userId, Long quizId);
+    SalonEntity start(String code, Long userId, Long quizId);
 
     void delete(String code, Long userId);
+
+    /** Suppression en fin de partie (sans vérification de droits). */
+    void cleanup(String code);
+
+    /** Déconnexion WebSocket : retire le joueur de son salon actif. */
+    void removeUserFromAnySalon(Long userId);
 }

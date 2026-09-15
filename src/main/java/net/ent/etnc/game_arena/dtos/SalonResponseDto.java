@@ -16,5 +16,6 @@ public class SalonResponseDto {
     private Long createurId;
     private EtatSalon etat;
     private Long quizId;
+    private int maxPlayers;
     private List<UserResponseDto> users;
 }

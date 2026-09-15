@@ -2,7 +2,7 @@ import { Client, type IMessage } from "@stomp/stompjs";
 import SockJS from "sockjs-client";
 import type { Salon } from "../types/salon";
 
-const API_URL = "http://localhost:8080";
+const API_URL = `http://${window.location.hostname}:8080`;
 
 export const connectToSalon = (
     code: string,

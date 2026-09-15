@@ -1,8 +1,11 @@
 package net.ent.etnc.game_arena.controllers.handlers;
 
+import jakarta.persistence.OptimisticLockException;
 import net.ent.etnc.game_arena.services.commons.ServiceException;
+import org.hibernate.StaleObjectStateException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.orm.ObjectOptimisticLockingFailureException;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -35,6 +38,21 @@ public class GlobalExceptionHandler {
      * → utilisateur anonyme  : 401 (doit se connecter)
      * → utilisateur connecté : 403 (droits insuffisants)
      */
+    /**
+     * Conflit de version Hibernate (deux utilisateurs ont modifié le même quiz simultanément).
+     * Retourne 409 Conflict avec un message explicite pour que le front puisse proposer
+     * un rechargement.
+     */
+    @ExceptionHandler({
+            ObjectOptimisticLockingFailureException.class,
+            OptimisticLockException.class,
+            StaleObjectStateException.class
+    })
+    public ResponseEntity<String> handleOptimisticLock(Exception e) {
+        return ResponseEntity.status(HttpStatus.CONFLICT)
+                .body("Ce quiz a été modifié par quelqu'un d'autre. Rechargez la page pour voir la version à jour.");
+    }
+
     @ExceptionHandler(AccessDeniedException.class)
     public ResponseEntity<String> handleAccessDeniedException(AccessDeniedException e) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();

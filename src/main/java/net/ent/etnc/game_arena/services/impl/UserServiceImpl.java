@@ -27,4 +27,9 @@ public class UserServiceImpl extends AbstractService<User, UserRepository> imple
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         return super.create(user);
     }
+
+    @Override
+    public User findByUsername(String username) {
+        return repository.findByUsername(username).orElse(null);
+    }
 }
