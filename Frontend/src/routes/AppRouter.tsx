@@ -14,7 +14,10 @@ import Salon from "../pages/Salon";
 import JoinSalon from "../pages/JoinSalon";
 import NotFound from "../pages/NotFound";
 import ChoixQuiz from "../pages/ChoixQuiz";
+import CreateQuiz from "../pages/CreateQuiz";
 import Game from "../pages/Game";
+import EditQuiz from "../pages/EditQuiz.tsx";
+import Profile from "../pages/Profile";
 
 export default function AppRouter() {
     return (
@@ -36,12 +39,15 @@ export default function AppRouter() {
                 <Route element={<MainLayout />}>
                     <Route path="/dashboard" element={<Dashboard />} />
                     <Route path="/quizzes" element={<Quizzes />} />
-                    <Route path="/quizzes/:id" element={<QuizDetails />} />
+                    <Route path="/quizzes/create" element={<CreateQuiz />} />
+                    <Route path="/quizzes/:quizId" element={<QuizDetails />} />
+                    <Route path="/quizzes/:quizId/edit" element={<EditQuiz />}/>
                     <Route path="/salon" element={<Salon />} />
                     <Route path="/salon/join" element={<JoinSalon />} />
                     <Route path="/salon/:code" element={<SalonLobby />} />
                     <Route path="/salon/:code/quiz" element={<ChoixQuiz />}/>
                     <Route path="/salon/:code/game" element={<Game />} />
+                    <Route path="/profile" element={<Profile />} />
                 </Route>
             </Route>
 

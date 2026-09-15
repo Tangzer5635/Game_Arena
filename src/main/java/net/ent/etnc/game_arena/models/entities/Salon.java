@@ -60,6 +60,10 @@ public class Salon extends AbstractPersistableWithIdSetter<Long> {
     @Setter
     private Long quizId;
 
+    @Getter
+    @Setter
+    private int maxPlayers = 8;
+
     // ── État de la partie en cours ──
 
     @Getter
@@ -67,15 +71,29 @@ public class Salon extends AbstractPersistableWithIdSetter<Long> {
     private int currentQuestionIndex = -1;
 
     @Getter
+    @Setter
+    private long questionStartedAt = 0L;
+
+    @Getter
     private final Map<Long, Integer> scores = new ConcurrentHashMap<>();
 
     @Getter
     private final Set<Long> answeredUserIds = ConcurrentHashMap.newKeySet();
 
+    @Getter
+    private final Map<Long, Integer> streaks = new ConcurrentHashMap<>();
+
+    @Getter
+    private final Map<Long, Boolean> streakBonuses = new ConcurrentHashMap<>();
+
     public void initScores() {
         scores.clear();
+        streaks.clear();
+        streakBonuses.clear();
         for (User u : users) {
             scores.put(u.getId(), 0);
+            streaks.put(u.getId(), 0);
+            streakBonuses.put(u.getId(), false);
         }
     }
 

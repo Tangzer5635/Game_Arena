@@ -1,8 +1,8 @@
 import api from "./api";
 import type { Salon } from "../types/salon";
 
-export const createSalon = async (): Promise<Salon> => {
-    const response = await api.post<Salon>("/salons");
+export const createSalon = async (maxPlayers: number = 8): Promise<Salon> => {
+    const response = await api.post<Salon>("/salons", null, { params: { maxPlayers } });
     return response.data;
 };
 

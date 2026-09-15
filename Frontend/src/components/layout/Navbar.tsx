@@ -6,7 +6,7 @@ export default function Navbar() {
 
     return (
         <nav>
-            <Link to="/">🎮 Game Arena</Link>
+            <Link to="/" className="nav-brand">Game Arena</Link>
 
             <div>
                 {isAuthenticated ? (
@@ -14,6 +14,7 @@ export default function Navbar() {
                         <Link to="/dashboard">Dashboard</Link>
                         <Link to="/quizzes">Quiz</Link>
                         <Link to="/salon">Salon</Link>
+                        <Link to="/profile">Mon profil</Link>
                         <button className="btn-ghost" onClick={logout}>
                             Déconnexion{currentUser ? ` (${currentUser.username})` : ""}
                         </button>

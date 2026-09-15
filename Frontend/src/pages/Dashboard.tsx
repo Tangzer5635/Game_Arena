@@ -36,6 +36,13 @@ export default function Dashboard() {
                     onClick={() => navigate("/salon")}
                 />
 
+                <Card
+                    title="✏️ Créer un quiz"
+                    description="Compose tes propres questions et défie tes amis."
+                    buttonText="Créer"
+                    onClick={() => navigate("/quizzes/create")}
+                />
+
             </div>
         </section>
     );

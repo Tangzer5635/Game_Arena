@@ -1,14 +1,11 @@
 import { Client, type IMessage } from "@stomp/stompjs";
 import SockJS from "sockjs-client";
 
-const API_URL = "http://localhost:8080";
+const API_URL = window.location.hostname === "localhost"
+    ? "http://localhost:8080"
+    : `http://${window.location.hostname}:8080`;
 
-// ── Types ──
-
-export interface GameReponse {
-    id: number;
-    text: string;
-}
+export interface GameReponse { id: number; text: string; }
 
 export interface GameQuestion {
     questionId: number;
@@ -16,10 +13,14 @@ export interface GameQuestion {
     reponses: GameReponse[];
     questionNumber: number;
     totalQuestions: number;
+    saisieLibre: boolean;
+    serverTimestamp: number;
 }
 
 export interface GameScores {
     scores: Record<string, number>;
+    streaks: Record<string, number>;
+    answeredUsers: string[];
     answeredCount: number;
     totalPlayers: number;
 }
@@ -27,86 +28,71 @@ export interface GameScores {
 export interface GameAnswerResult {
     userId: number;
     correct: boolean;
-    correctReponseId: number;
+    correctReponseId: number | null;
+    pointsEarned: number;
     score: number;
+    elapsedMs: number;
+    streak: number;
+    multiplier: number;
 }
 
-// ── Callbacks ──
+export interface GameReveal {
+    correctReponseId: number | null;
+    correctAnswer: string | null;
+    scores: Record<string, number>;
+}
+
+export interface GameCountdown { value: number; }
 
 export interface GameCallbacks {
-    onQuestion: (question: GameQuestion) => void;
-    onScores: (scores: GameScores) => void;
-    onAnswerResult: (result: GameAnswerResult) => void;
-    onResults: (results: GameScores) => void;
+    onQuestion: (q: GameQuestion) => void;
+    onScores: (s: GameScores) => void;
+    onAnswerResult: (r: GameAnswerResult) => void;
+    onReveal: (r: GameReveal) => void;
+    onResults: (r: GameScores) => void;
+    onCountdown: (c: GameCountdown) => void;
     onConnected: () => void;
 }
 
-// ── Client ──
+function getAuthHeaders(): Record<string, string> {
+    const token = localStorage.getItem("token");
+    return token ? { Authorization: `Bearer ${token}` } : {};
+}
 
-export const connectToGame = (
-    code: string,
-    userId: number,
-    callbacks: GameCallbacks
-): Client => {
+export const connectToGame = (code: string, userId: number, callbacks: GameCallbacks): Client => {
     const client = new Client({
         webSocketFactory: () => new SockJS(`${API_URL}/ws`),
         reconnectDelay: 5000,
-
-        debug: (message) => {
-            console.log("[STOMP]", message);
-        },
-
+        connectHeaders: getAuthHeaders(),
         onConnect: () => {
-            console.log("Game WebSocket connecté");
-
-            client.subscribe(`/topic/game/${code}/question`, (msg: IMessage) => {
-                callbacks.onQuestion(JSON.parse(msg.body));
-            });
-
-            client.subscribe(`/topic/game/${code}/scores`, (msg: IMessage) => {
-                callbacks.onScores(JSON.parse(msg.body));
-            });
-
-            client.subscribe(`/topic/game/${code}/answer-result/${userId}`, (msg: IMessage) => {
-                callbacks.onAnswerResult(JSON.parse(msg.body));
-            });
-
-            client.subscribe(`/topic/game/${code}/results`, (msg: IMessage) => {
-                callbacks.onResults(JSON.parse(msg.body));
-            });
-
+            client.subscribe(`/topic/game/${code}/question`, (m: IMessage) => callbacks.onQuestion(JSON.parse(m.body)));
+            client.subscribe(`/topic/game/${code}/scores`, (m: IMessage) => callbacks.onScores(JSON.parse(m.body)));
+            client.subscribe(`/topic/game/${code}/answer-result/${userId}`, (m: IMessage) => callbacks.onAnswerResult(JSON.parse(m.body)));
+            client.subscribe(`/topic/game/${code}/reveal`, (m: IMessage) => callbacks.onReveal(JSON.parse(m.body)));
+            client.subscribe(`/topic/game/${code}/results`, (m: IMessage) => callbacks.onResults(JSON.parse(m.body)));
+            client.subscribe(`/topic/game/${code}/countdown`, (m: IMessage) => callbacks.onCountdown(JSON.parse(m.body)));
             callbacks.onConnected();
-        },
 
-        onStompError: (frame) => {
-            console.error("Erreur STOMP :", frame.headers["message"]);
+            // Reconnexion mi-partie : demande immédiatement la question courante
+            // Le serveur ne répond que si une partie est en cours dans ce salon
+            client.publish({
+                destination: `/app/game/${code}/rejoin`,
+                headers: getAuthHeaders(),
+                body: "",
+            });
         },
-
-        onWebSocketError: (error) => {
-            console.error("Erreur WebSocket :", error);
-        },
+        onStompError: (frame) => console.error("STOMP error:", frame.headers["message"]),
+        onWebSocketError: (error) => console.error("WS error:", error),
     });
-
     client.activate();
-
     return client;
 };
 
-export const sendStartGame = (client: Client, code: string) => {
-    client.publish({
-        destination: `/app/game/${code}/start`,
-        body: "",
-    });
-};
+export const sendStartGame = (client: Client, code: string) =>
+    client.publish({ destination: `/app/game/${code}/start`, headers: getAuthHeaders(), body: "" });
 
-export const sendAnswer = (
-    client: Client,
-    code: string,
-    userId: number,
-    reponseId: number
-) => {
-    client.publish({
-        destination: `/app/game/${code}/answer`,
-        body: JSON.stringify({ userId, reponseId }),
-    });
-};
+export const sendAnswer = (client: Client, code: string, reponseId: number | null, answer: string) =>
+    client.publish({ destination: `/app/game/${code}/answer`, headers: getAuthHeaders(), body: JSON.stringify({ reponseId, answer }) });
+
+export const sendRejoin = (client: Client, code: string) =>
+    client.publish({ destination: `/app/game/${code}/rejoin`, headers: getAuthHeaders(), body: "" });

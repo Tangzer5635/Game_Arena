@@ -6,17 +6,23 @@ export default function Home() {
 
     return (
         <div className="hero">
-            <h1>🎮 Game Arena</h1>
+            <div className="hero-badge">⚡ Multijoueur temps réel</div>
 
-            <p>
-                Affronte tes amis en temps réel sur des quiz multijoueurs.
-                Crée un salon, partage le code, et que le meilleur gagne !
+            <h1>
+                Bienvenue dans<br />
+                <span>Game Arena</span>
+            </h1>
+
+            <p className="hero-sub">
+                Affronte tes amis sur des quiz en temps réel.
+                Crée un salon, partage le code à 4 chiffres,
+                et que le meilleur gagne.
             </p>
 
             <div className="hero-buttons">
                 {isAuthenticated ? (
                     <Link to="/dashboard">
-                        <button>Accéder au dashboard</button>
+                        <button className="btn-gold">Accéder au dashboard</button>
                     </Link>
                 ) : (
                     <>
@@ -30,23 +36,45 @@ export default function Home() {
                 )}
             </div>
 
+            <div className="hero-stats">
+                <div className="hero-stat">
+                    <div className="hero-stat-value">12</div>
+                    <div className="hero-stat-label">Quiz</div>
+                </div>
+                <div className="hero-stat">
+                    <div className="hero-stat-value">144</div>
+                    <div className="hero-stat-label">Questions</div>
+                </div>
+                <div className="hero-stat">
+                    <div className="hero-stat-value">∞</div>
+                    <div className="hero-stat-label">Joueurs</div>
+                </div>
+                <div className="hero-stat">
+                    <div className="hero-stat-value">15s</div>
+                    <div className="hero-stat-label">Par question</div>
+                </div>
+            </div>
+
             <div className="hero-features">
                 <div className="hero-feature">
                     <div className="icon">⚡</div>
                     <h3>Temps réel</h3>
-                    <p>Les questions et scores se synchronisent instantanément entre tous les joueurs.</p>
+                    <p>Questions et scores synchronisés instantanément via WebSocket.</p>
                 </div>
-
                 <div className="hero-feature">
                     <div className="icon">🏆</div>
-                    <h3>Classement live</h3>
-                    <p>Suis ton score et celui de tes adversaires en direct pendant la partie.</p>
+                    <h3>Score vitesse</h3>
+                    <p>Plus tu réponds vite, plus tu marques de points — jusqu'à 1 000 par question.</p>
                 </div>
-
+                <div className="hero-feature">
+                    <div className="icon">🔥</div>
+                    <h3>Streaks</h3>
+                    <p>3 bonnes réponses consécutives → multiplicateur ×2 sur la suivante.</p>
+                </div>
                 <div className="hero-feature">
                     <div className="icon">🔗</div>
-                    <h3>Simple à rejoindre</h3>
-                    <p>Un code à 4 chiffres suffit pour rejoindre un salon et commencer à jouer.</p>
+                    <h3>Code simple</h3>
+                    <p>Un code à 4 chiffres pour inviter tes amis — aucun compte requis pour rejoindre.</p>
                 </div>
             </div>
         </div>

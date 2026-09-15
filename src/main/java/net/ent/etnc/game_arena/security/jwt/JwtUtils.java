@@ -86,6 +86,16 @@ public class JwtUtils {
         }
     }
 
+    public String getUserNameFromJwtToken(String token) {
+        return Jwts.parser()
+                .verifyWith(getSecretKey())
+                .build()
+                .parseSignedClaims(token)
+                .getPayload()
+                .getSubject();
+    }
+
+
     /**
      * Extrait le username (subject) d'un token JWT valide.
      */
