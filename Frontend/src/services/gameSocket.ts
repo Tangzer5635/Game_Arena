@@ -1,11 +1,15 @@
 import { Client, type IMessage } from "@stomp/stompjs";
 import SockJS from "sockjs-client";
 
-const API_URL = window.location.hostname === "localhost"
-    ? "http://localhost:8080"
-    : `http://${window.location.hostname}:8080`;
+const API_URL =
+    window.location.hostname === "localhost"
+        ? "http://localhost:8080"
+        : `http://${window.location.hostname}:8080`;
 
-export interface GameReponse { id: number; text: string; }
+export interface GameReponse {
+    id: number;
+    text: string;
+}
 
 export interface GameQuestion {
     questionId: number;
@@ -42,7 +46,9 @@ export interface GameReveal {
     scores: Record<string, number>;
 }
 
-export interface GameCountdown { value: number; }
+export interface GameCountdown {
+    value: number;
+}
 
 export interface GameCallbacks {
     onQuestion: (q: GameQuestion) => void;
@@ -56,43 +62,128 @@ export interface GameCallbacks {
 
 function getAuthHeaders(): Record<string, string> {
     const token = localStorage.getItem("token");
-    return token ? { Authorization: `Bearer ${token}` } : {};
+
+    return token
+        ? {
+            Authorization: `Bearer ${token}`,
+        }
+        : {};
 }
 
-export const connectToGame = (code: string, userId: number, callbacks: GameCallbacks): Client => {
+export const connectToGame = (
+    code: string,
+    userId: number,
+    callbacks: GameCallbacks
+): Client => {
     const client = new Client({
         webSocketFactory: () => new SockJS(`${API_URL}/ws`),
+
         reconnectDelay: 5000,
+
         connectHeaders: getAuthHeaders(),
+
         onConnect: () => {
-            client.subscribe(`/topic/game/${code}/question`, (m: IMessage) => callbacks.onQuestion(JSON.parse(m.body)));
-            client.subscribe(`/topic/game/${code}/scores`, (m: IMessage) => callbacks.onScores(JSON.parse(m.body)));
-            client.subscribe(`/topic/game/${code}/answer-result/${userId}`, (m: IMessage) => callbacks.onAnswerResult(JSON.parse(m.body)));
-            client.subscribe(`/topic/game/${code}/reveal`, (m: IMessage) => callbacks.onReveal(JSON.parse(m.body)));
-            client.subscribe(`/topic/game/${code}/results`, (m: IMessage) => callbacks.onResults(JSON.parse(m.body)));
-            client.subscribe(`/topic/game/${code}/countdown`, (m: IMessage) => callbacks.onCountdown(JSON.parse(m.body)));
+            client.subscribe(
+                `/topic/game/${code}/question`,
+                (message: IMessage) => {
+                    callbacks.onQuestion(JSON.parse(message.body));
+                }
+            );
+
+            client.subscribe(
+                `/topic/game/${code}/scores`,
+                (message: IMessage) => {
+                    callbacks.onScores(JSON.parse(message.body));
+                }
+            );
+
+            client.subscribe(
+                `/topic/game/${code}/answer-result/${userId}`,
+                (message: IMessage) => {
+                    callbacks.onAnswerResult(JSON.parse(message.body));
+                }
+            );
+
+            client.subscribe(
+                `/topic/game/${code}/reveal`,
+                (message: IMessage) => {
+                    callbacks.onReveal(JSON.parse(message.body));
+                }
+            );
+
+            client.subscribe(
+                `/topic/game/${code}/results`,
+                (message: IMessage) => {
+                    callbacks.onResults(JSON.parse(message.body));
+                }
+            );
+
+            client.subscribe(
+                `/topic/game/${code}/countdown`,
+                (message: IMessage) => {
+                    callbacks.onCountdown(JSON.parse(message.body));
+                }
+            );
+
             callbacks.onConnected();
 
-            // Reconnexion mi-partie : demande immédiatement la question courante
-            // Le serveur ne répond que si une partie est en cours dans ce salon
+            // Reconnexion pendant une partie :
+            // demande immédiatement la question courante.
             client.publish({
                 destination: `/app/game/${code}/rejoin`,
                 headers: getAuthHeaders(),
                 body: "",
             });
         },
-        onStompError: (frame) => console.error("STOMP error:", frame.headers["message"]),
-        onWebSocketError: (error) => console.error("WS error:", error),
+
+        onStompError: (frame) => {
+            console.error(
+                "STOMP error:",
+                frame.headers["message"]
+            );
+        },
+
+        onWebSocketError: (error) => {
+            console.error("WS error:", error);
+        },
     });
+
     client.activate();
+
     return client;
 };
 
-export const sendStartGame = (client: Client, code: string) =>
-    client.publish({ destination: `/app/game/${code}/start`, headers: getAuthHeaders(), body: "" });
+export const sendStartGame = (
+    client: Client,
+    code: string
+) =>
+    client.publish({
+        destination: `/app/game/${code}/start`,
+        headers: getAuthHeaders(),
+        body: "",
+    });
 
-export const sendAnswer = (client: Client, code: string, reponseId: number | null, answer: string) =>
-    client.publish({ destination: `/app/game/${code}/answer`, headers: getAuthHeaders(), body: JSON.stringify({ reponseId, answer }) });
+export const sendAnswer = (
+    client: Client,
+    code: string,
+    reponseId: number | null,
+    answer: string
+) =>
+    client.publish({
+        destination: `/app/game/${code}/answer`,
+        headers: getAuthHeaders(),
+        body: JSON.stringify({
+            reponseId,
+            answer,
+        }),
+    });
 
-export const sendRejoin = (client: Client, code: string) =>
-    client.publish({ destination: `/app/game/${code}/rejoin`, headers: getAuthHeaders(), body: "" });
+export const sendRejoin = (
+    client: Client,
+    code: string
+) =>
+    client.publish({
+        destination: `/app/game/${code}/rejoin`,
+        headers: getAuthHeaders(),
+        body: "",
+    });

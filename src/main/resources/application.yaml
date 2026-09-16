@@ -11,8 +11,8 @@ spring:
   # === JPA / HIBERNATE ===
   jpa:
     hibernate:
-      # "update" : Hibernate adapte le schéma sans supprimer les données existantes
-      # En production on utiliserait "validate" avec un outil de migration (Liquibase/Flyway)
+      # "validate" : Hibernate vérifie que le schéma correspond aux entités
+      # sans le modifier. Les tables sont créées par migration_v2.sql.
       ddl-auto: update
     show-sql: false
     properties:

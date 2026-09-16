@@ -110,7 +110,14 @@ public class SalonServiceImpl implements SalonService {
     @Override
     @Transactional(readOnly = true)
     public SalonEntity findByCode(String code) {
-        return salonRepository.findByCode(code)
+        return salonRepository.findByCodeWithUsers(code)
+                .orElseThrow(() -> new ServiceException("Salon introuvable : " + code));
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public SalonEntity findByCodeWithUsers(String code) {
+        return salonRepository.findByCodeWithUsers(code)
                 .orElseThrow(() -> new ServiceException("Salon introuvable : " + code));
     }
 

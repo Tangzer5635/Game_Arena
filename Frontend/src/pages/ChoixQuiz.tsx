@@ -3,42 +3,38 @@ import { useNavigate, useParams } from "react-router-dom";
 import { getQuizzes } from "../services/quizService";
 import { startSalon } from "../services/salonService";
 import type { Quiz } from "../types/quiz";
+import SearchBar from "../components/ui/SearchBar";
+import QuizOptionCard from "../components/quiz/QuizOptionCard";
 
 export default function ChoixQuiz() {
     const { code } = useParams<{ code: string }>();
     const navigate = useNavigate();
 
     const [quizzes, setQuizzes] = useState<Quiz[]>([]);
+    const [search, setSearch] = useState("");
     const [selectedQuizId, setSelectedQuizId] = useState<number | null>(null);
     const [loading, setLoading] = useState(true);
     const [starting, setStarting] = useState(false);
     const [error, setError] = useState("");
 
     useEffect(() => {
-        const load = async () => {
-            try {
-                setQuizzes(await getQuizzes());
-            } catch {
-                setError("Impossible de récupérer les quiz.");
-            } finally {
-                setLoading(false);
-            }
-        };
-        load();
+        getQuizzes()
+            .then(setQuizzes)
+            .catch(() => setError("Impossible de récupérer les quiz."))
+            .finally(() => setLoading(false));
     }, []);
+
+    const filtered = quizzes.filter(q =>
+        q.titre.toLowerCase().includes(search.toLowerCase()) ||
+        q.description?.toLowerCase().includes(search.toLowerCase())
+    );
 
     const handleStart = async () => {
         if (!code || selectedQuizId === null) return;
-        setStarting(true);
-        setError("");
-        try {
-            await startSalon(code, selectedQuizId);
-            navigate(`/salon/${code}/game`);
-        } catch {
-            setError("Impossible de lancer la partie.");
-        } finally {
-            setStarting(false);
-        }
+        setStarting(true); setError("");
+        try { await startSalon(code, selectedQuizId); navigate(`/salon/${code}/game`); }
+        catch { setError("Impossible de lancer la partie."); }
+        finally { setStarting(false); }
     };
 
     if (loading) return <p>Chargement des quiz...</p>;
@@ -46,34 +42,29 @@ export default function ChoixQuiz() {
     return (
         <div className="choix-quiz">
             <h1>Choisir un quiz</h1>
-            <p>Salon : <strong>{code}</strong></p>
+            <p style={{ color: "var(--text-dim)" }}>Salon : <strong style={{ color: "var(--text-h)" }}>{code}</strong></p>
 
             {error && <p className="error">{error}</p>}
 
-            {quizzes.length === 0 ? (
-                <p>Aucun quiz disponible.</p>
+            <div style={{ margin: "16px 0" }}>
+                <SearchBar value={search} onChange={setSearch} placeholder="Rechercher un quiz..." />
+            </div>
+
+            {filtered.length === 0 ? (
+                <p style={{ color: "var(--text-dim)" }}>Aucun quiz ne correspond à votre recherche.</p>
             ) : (
-                quizzes.map((quiz) => (
-                    <div
+                filtered.map(quiz => (
+                    <QuizOptionCard
                         key={quiz.id}
-                        className={`quiz-option ${selectedQuizId === quiz.id ? "selected" : ""}`}
-                        onClick={() => setSelectedQuizId(quiz.id)}
-                    >
-                        <h3>{quiz.titre}</h3>
-                        <p>{quiz.description}</p>
-                        <p style={{ fontSize: 13, color: "var(--accent)" }}>
-                            {quiz.questions.length} question{quiz.questions.length > 1 ? "s" : ""}
-                        </p>
-                    </div>
+                        quiz={quiz}
+                        selected={selectedQuizId === quiz.id}
+                        onSelect={() => setSelectedQuizId(quiz.id)}
+                    />
                 ))
             )}
 
-            <button
-                onClick={handleStart}
-                disabled={selectedQuizId === null || starting}
-                style={{ width: "100%", marginTop: 16 }}
-            >
-                {starting ? "Lancement..." : "🚀 Lancer la partie"}
+            <button onClick={handleStart} disabled={selectedQuizId === null || starting} style={{ width: "100%", marginTop: 16 }}>
+                {starting ? "Lancement..." : "Lancer la partie"}
             </button>
         </div>
     );

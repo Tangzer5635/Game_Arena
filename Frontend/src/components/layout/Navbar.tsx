@@ -6,8 +6,7 @@ export default function Navbar() {
 
     return (
         <nav>
-            <Link to="/" className="nav-brand">Game Arena</Link>
-
+            <Link to="/" className="nav-brand"><img src="/favicon.ico" alt="Logo Application"/> | GAME ARENA</Link>
             <div>
                 {isAuthenticated ? (
                     <>

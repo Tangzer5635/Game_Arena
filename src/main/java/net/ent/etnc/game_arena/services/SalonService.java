@@ -13,6 +13,9 @@ public interface SalonService {
 
     SalonEntity findByCode(String code);
 
+    /** Charge le salon avec ses joueurs (JOIN FETCH) — à utiliser hors contexte transactionnel. */
+    SalonEntity findByCodeWithUsers(String code);
+
     SalonEntity addUser(String code, Long userId);
 
     SalonEntity removeUser(String code, Long userId);
