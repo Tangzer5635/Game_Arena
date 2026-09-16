@@ -26,6 +26,12 @@ public class QuizServiceImpl
         this.questionService = questionService;
     }
 
+    @Transactional(readOnly = true)
+    public Quiz getQuizForGame(Long id) {
+        return this.repository.findByIdWithQuestions(id)
+                .orElseThrow(() -> new RuntimeException("Quiz introuvable"));
+    }
+
     @Override
     public Quiz addQuestions(Long quizId, List<Long> questionIds) {
         Quiz quiz = findById(quizId)
